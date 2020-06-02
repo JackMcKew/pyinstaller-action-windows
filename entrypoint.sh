@@ -33,7 +33,7 @@ fi
 ls
 echo 'here'
 cd $WORKDIR
-
+ls
 if [ -f requirements.txt ]; then
     pip install -r requirements.txt
 fi # [ -f requirements.txt ]
