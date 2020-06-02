@@ -8,6 +8,11 @@ The source code directory should have your `.spec` file that PyInstaller generat
 
 If the `src` folder has a `requirements.txt` file, the packages will be installed into the environment before PyInstaller runs.
 
+If you wish to specify a package mirror, this is possibly via the `pypi_url` and/or the `pypi_index_url`, these defaults are:
+
+- `pypi_url` = `https://pypi.python.org/`
+- `pypi_index_url` = `https://pypi.python.org/simple`
+
 ## Example usage
 
 Include this in your `.github/workflows/main.yaml`:
@@ -15,6 +20,7 @@ Include this in your `.github/workflows/main.yaml`:
 ```yaml
 - name: PyInstaller Windows
   uses: JackMcKew/pyinstaller-action-windows@master
+    with: src
 ```
 
 ## Full Example
@@ -52,3 +58,7 @@ jobs:
         name: name-of-artifact
         path: src/dist/windows
 ```
+
+## Sources
+
+A big thank you to all the contributors over at <https://github.com/cdrx/docker-pyinstaller>, this action is just a modified version of their docker container, thank you!

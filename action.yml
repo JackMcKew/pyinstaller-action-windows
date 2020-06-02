@@ -9,6 +9,14 @@ inputs:
     description: 'Directory containing source code & .spec file (optional requirements.txt).'
     required: True
     default: src
+  pypi_url:
+    description: 'Specify a custom URL for PYPI'
+    required: False
+    default: https://pypi.python.org/
+  pypi_index_url:
+    description: 'Specify a custom URL for PYPI Index'
+    required: False
+    default: https://pypi.python.org/simple
 outputs:
   output:
     description: 'The output of PyInstaller'

@@ -11,6 +11,10 @@ set -e
 # and don't allow that much flexibility to mount volumes
 SRCDIR=$1
 
+PYPI_URL = $2
+
+PYPI_INDEX_URL = $3
+
 WORKDIR=${SRCDIR:-/src}
 
 #
