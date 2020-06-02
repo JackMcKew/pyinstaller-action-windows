@@ -30,17 +30,14 @@ if [[ "$PYPI_URL" != "https://pypi.python.org/" ]] || \
     echo "Using custom pip.ini: "
     cat /wine/drive_c/users/root/pip/pip.ini
 fi
-echo "before cd"
-ls
+
 cd $WORKDIR
-echo "after cd"
-ls
+
 if [ -f requirements.txt ]; then
     pip install -r requirements.txt
 fi # [ -f requirements.txt ]
 
-echo "this is at"
-echo "$@"
+
 
 # if [[ "$@" == "" ]]; then
 pyinstaller --clean -y --dist ./dist/windows --workpath /tmp *.spec
