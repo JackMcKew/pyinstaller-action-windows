@@ -10,6 +10,7 @@ set -e
 # Useful for CI pipiles which use docker for their build steps
 # and don't allow that much flexibility to mount volumes
 SRCDIR=/$1
+echo $SRCDIR
 WORKDIR=${SRCDIR:-/src}
 
 #
@@ -29,7 +30,8 @@ if [[ "$PYPI_URL" != "https://pypi.python.org/" ]] || \
     echo "Using custom pip.ini: "
     cat /wine/drive_c/users/root/pip/pip.ini
 fi
-
+ls
+echo 'here'
 cd $WORKDIR
 
 if [ -f requirements.txt ]; then
