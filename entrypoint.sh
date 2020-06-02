@@ -9,7 +9,7 @@ set -e
 # Allow the workdir to be set using an env var.
 # Useful for CI pipiles which use docker for their build steps
 # and don't allow that much flexibility to mount volumes
-SRCDIR=$(pwd)/$1
+SRCDIR="github/workspace/"$1
 WORKDIR=${SRCDIR:-/src}
 
 #
