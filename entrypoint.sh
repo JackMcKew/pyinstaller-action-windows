@@ -9,7 +9,6 @@ set -e
 # Allow the workdir to be set using an env var.
 # Useful for CI pipiles which use docker for their build steps
 # and don't allow that much flexibility to mount volumes
-ls
 SRCDIR=/$1
 WORKDIR=${SRCDIR:-/src}
 
