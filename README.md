@@ -1,4 +1,4 @@
-# pyinstaller-action
+# PyInstaller-Action-Windows
 
 Github Action for building executables with PyInstaller
 
