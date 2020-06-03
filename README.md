@@ -20,7 +20,8 @@ Include this in your `.github/workflows/main.yaml`:
 ```yaml
 - name: PyInstaller Windows
   uses: JackMcKew/pyinstaller-action-windows@master
-    with: src
+    with:
+      path: src
 ```
 
 ## Full Example
