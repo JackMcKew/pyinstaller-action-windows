@@ -13,6 +13,10 @@ If you wish to specify a package mirror, this is possibly via the `pypi_url` and
 - `pypi_url` = `https://pypi.python.org/`
 - `pypi_index_url` = `https://pypi.python.org/simple`
 
+> If you are using the default Python `gitignore` file, ensure to remove `.spec`.
+
+> This action uses [Wine](https://www.winehq.org) to emulate windows inside Docker for packaging POSIX executables.
+
 ## Example usage
 
 Include this in your `.github/workflows/main.yaml`:
