@@ -23,7 +23,7 @@ Include this in your `.github/workflows/main.yaml`:
 
 ```yaml
 - name: PyInstaller Windows
-  uses: JackMcKew/pyinstaller-action-windows@master
+  uses: JackMcKew/pyinstaller-action-windows@main
     with:
       path: src
 ```
@@ -41,9 +41,9 @@ name: Package Application with Pyinstaller
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -54,7 +54,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Package Application
-      uses: JackMcKew/pyinstaller-action-windows@master
+      uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: src
 
