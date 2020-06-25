@@ -6,7 +6,7 @@ branding:
   color: 'blue'
 inputs:
   path:
-    description: 'Directory containing source code & .spec file (optional requirements.txt).'
+    description: 'Directory containing source code (optional requirements.txt).'
     required: True
     default: src
   pypi_url:
@@ -17,6 +17,10 @@ inputs:
     description: 'Specify a custom URL for PYPI Index'
     required: False
     default: https://pypi.python.org/simple
+  spec:
+    description: 'Specify a file path for .spec file'
+    required: False
+    default: ""
 outputs:
   output:
     description: 'The output of PyInstaller'
@@ -28,3 +32,4 @@ runs:
     - ${{ inputs.path }}
     - ${{ inputs.pypi_url }}
     - ${{ inputs.pypi_index_url }}
+    - ${{ inputs.spec }}
