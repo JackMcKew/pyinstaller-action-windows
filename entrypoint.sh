@@ -17,7 +17,7 @@ PYPI_INDEX_URL=$3
 
 WORKDIR=${SRCDIR:-/src}
 
-SPEC_FILE="${SRCDIR}/${4}"
+SPEC_FILE=${4:-*.spec}
 
 python -m pip install --upgrade pip wheel setuptools
 
