@@ -20,7 +20,7 @@ inputs:
   spec:
     description: 'Specify a file path for .spec file'
     required: False
-    default: pyinstaller.spec
+    default: *.spec
 outputs:
   output:
     description: 'The output of PyInstaller'
