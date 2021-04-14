@@ -37,3 +37,4 @@ runs:
     - ${{ inputs.pypi_url }}
     - ${{ inputs.pypi_index_url }}
     - ${{ inputs.spec }}
+    - ${{ inputs.requirements }}
