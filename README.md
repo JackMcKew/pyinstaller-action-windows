@@ -7,7 +7,7 @@ To build your application, you need to specify where your source code is via the
 The source code directory should have your `.spec` file that PyInstaller generates. If you don't have one, you'll need to run PyInstaller once locally to generate it.
 Also if you have another program `.spec` file you can set specific pyinstaller `.spec` file by `spec: <YOUR_SPEC_FILE_NAME>`
 
-If the `src` folder has a `requirements.txt` file, the packages will be installed into the environment before PyInstaller runs.
+If the `src` folder has a `requirements.txt` file, the packages will be installed into the environment before PyInstaller runs. This can also be specified via the `requirements` argument.
 
 If you wish to specify a package mirror, this is possibly via the `pypi_url` and/or the `pypi_index_url`, these defaults are:
 
