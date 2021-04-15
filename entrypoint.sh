@@ -41,9 +41,9 @@ fi
 
 cd $WORKDIR
 
-if [ -f requirements.txt ]; then
-    pip install -r requirements.txt
-fi # [ -f requirements.txt ]
+if [ -f $5 ]; then
+    pip install -r $5
+fi # [ -f $5 ]
 
 
 

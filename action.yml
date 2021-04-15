@@ -21,6 +21,10 @@ inputs:
     description: 'Specify a file path for .spec file'
     required: False
     default: ""
+  requirements:
+    description: 'Specify a file path for requirements.txt file'
+    required: False
+    default: "requirements.txt"
 outputs:
   output:
     description: 'The output of PyInstaller'
@@ -33,3 +37,4 @@ runs:
     - ${{ inputs.pypi_url }}
     - ${{ inputs.pypi_index_url }}
     - ${{ inputs.spec }}
+    - ${{ inputs.requirements }}
