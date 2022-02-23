@@ -1,5 +1,5 @@
 # action.yaml
-name: 'PyInstaller Windows'
+name: 'Build Python Windows(PyInstaller)'
 description: 'Customisable GitHub Action to package your python code with PyInstaller for Windows'
 branding:
   icon: 'box'
