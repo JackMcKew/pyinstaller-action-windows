@@ -74,3 +74,14 @@ If you get this error: `OSError: [WinError 123] Invalid name: '/tmp\\*'`, ensure
 ## Sources
 
 A big thank you to all the contributors over at <https://github.com/cdrx/docker-pyinstaller>, this action is just a modified version of their docker container, thank you!
+
+## Python 3.10
+
+If you are running into problems, please try using the branch `python3-10-pyinstaller-5-3`:
+
+``` yaml
+- name: PyInstaller Windows
+      uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
+      with:
+        path: src
+```
