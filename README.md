@@ -20,7 +20,7 @@ If you wish to specify a package mirror, this is possibly via the `pypi_url` and
 
 ## Example usage
 
-There's an example repository where you can see this action in action: <https://github.com/JackMcKew/pyinstaller-action-windows-example>. Where you can find the packaged executable at: <https://github.com/JackMcKew/pyinstaller-action-windows-example/actions/runs/135879475>.
+There's an example repository where you can see this action in action: <https://github.com/JackMcKew/pyinstaller-action-windows-example>.
 
 Include this in your `.github/workflows/main.yaml`:
 
