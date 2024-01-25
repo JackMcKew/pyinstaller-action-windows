@@ -9,22 +9,32 @@ inputs:
     description: 'Directory containing source code (optional requirements.txt).'
     required: True
     default: src
+
   pypi_url:
     description: 'Specify a custom URL for PYPI'
     required: False
     default: https://pypi.python.org/
+
   pypi_index_url:
     description: 'Specify a custom URL for PYPI Index'
     required: False
     default: https://pypi.python.org/simple
+
   spec:
     description: 'Specify a file path for .spec file'
     required: False
     default: ""
+
   requirements:
     description: 'Specify a file path for requirements.txt file'
     required: False
     default: "requirements.txt"
+  
+  add_data_dirs:
+    description: 'Specify a list of directories to add to the `--add-data` flag, the dirs must be separated by a blank space'
+    required: False
+    default: ""
+
 outputs:
   output:
     description: 'The output of PyInstaller'
@@ -38,3 +48,4 @@ runs:
     - ${{ inputs.pypi_index_url }}
     - ${{ inputs.spec }}
     - ${{ inputs.requirements }}
+    - ${{ inputs.add_data_dirs }}

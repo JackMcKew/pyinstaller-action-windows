@@ -19,6 +19,8 @@ WORKDIR=${SRCDIR:-/src}
 
 SPEC_FILE=${4:-*.spec}
 
+ADD_DATA_DIRS=$6
+
 python -m pip install --upgrade pip wheel setuptools
 
 #
@@ -46,9 +48,23 @@ if [ -f $5 ]; then
 fi # [ -f $5 ]
 
 
+ADD_DATA=""
+
+# ADD_DATA_DIRS is empty or not provided
+if [ ! -z "$ADD_DATA_DIRS" ]; then
+
+    # Process every directory in the ADD_DATA_DIRS string
+    for dir in $ADD_DATA_DIRS; do
+        # Add the formatted directory to the output string
+        ADD_DATA+="--add-data $SRCDIR/$dir:$dir "
+    done
+
+    # Remove the extra space at the end of the output string
+    ADD_DATA=${ADD_DATA::-1}
+fi
 
 # if [[ "$@" == "" ]]; then
-pyinstaller --clean -y --dist ./dist/windows --workpath /tmp $SPEC_FILE
+pyinstaller --clean -y $ADD_DATA --dist ./dist/windows --workpath /tmp $SPEC_FILE
 chown -R --reference=. ./dist/windows
 # else
     # sh -c "$@"
