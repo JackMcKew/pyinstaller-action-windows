@@ -56,7 +56,7 @@ if [ ! -z "$ADD_DATA_DIRS" ]; then
     # Process every directory in the ADD_DATA_DIRS string
     for dir in $ADD_DATA_DIRS; do
         # Add the formatted directory to the output string
-        ADD_DATA+="--add-data \"$SRCDIR/$dir;$dir\" "
+        ADD_DATA+="--add-data $SRCDIR/$dir:$dir "
     done
 
     # Remove the extra space at the end of the output string
