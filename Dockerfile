@@ -1,4 +1,4 @@
-FROM ganiziolek/pyinstaller-windows:3.10
+FROM jackmckew/pyinstaller-windows
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
