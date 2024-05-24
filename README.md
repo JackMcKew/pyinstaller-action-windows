@@ -18,6 +18,25 @@ If you wish to specify a package mirror, this is possibly via the `pypi_url` and
 
 > This action uses [Wine](https://www.winehq.org) to emulate windows inside Docker for packaging POSIX executables.
 
+## CURRENT ISSUE: `ModuleNotFoundError pkg_resources.extern`
+The pkg_resources hook for setuptools>=v70.0.0 is currently missing in pyinstaller 5.13, which is used in this Github Action.
+
+To address this, a future version of this project will incorporate pyinstaller>=6.7 to resolve the issue. 
+However, in the interim, it is necessary to manually include a hiddenimport to the `.spec` file.
+
+Include `hiddenimports=['pkg_resources.extern'],` in your `.spec` file, something like this:
+```
+a = Analysis(
+
+    hiddenimports=['pkg_resources.extern'],
+)
+```
+
+For further assistance, please refer to the following issues:
+- JackMcKew/pyinstaller-action-windows#51
+- pyinstaller/pyinstaller#8554
+
+
 ## Example usage
 
 There's an example repository where you can see this action in action: <https://github.com/JackMcKew/pyinstaller-action-windows-example>.
