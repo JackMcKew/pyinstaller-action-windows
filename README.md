@@ -73,14 +73,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Package Application
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: src
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: name-of-artifact
         path: src/dist/windows
