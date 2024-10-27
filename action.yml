@@ -1,9 +1,9 @@
 # action.yaml
-name: 'PyInstaller Windows'
+name: 'Cythinst 64'
 description: 'Customisable GitHub Action to package your python code with PyInstaller for Windows'
 branding:
   icon: 'box'
-  color: 'blue'
+  color: 'green'
 inputs:
   path:
     description: 'Directory containing source code (optional requirements.txt).'
