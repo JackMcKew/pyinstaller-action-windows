@@ -6,8 +6,6 @@ ENV DEBIAN_FRONTEND noninteractive
 # Define arguments for Wine, Python, and PyInstaller versions
 ARG WINE_VERSION=winehq-staging
 ARG PYTHON_VERSION=3.10.1
-ARG PYINSTALLER_VERSION=6.8.0
-
 
 # we need wine for this all to work, so we'll use the PPA
 RUN set -x \
@@ -103,9 +101,7 @@ RUN echo 'wine '\''C:\python\python.exe'\'' "$@"' > /usr/bin/python \
     && (pip install -U pip || true) \
     && rm -rf /tmp/.wine-*
 
-
-
-RUN pip install cython pyinstaller=="$PYINSTALLER_VERSION" 
+RUN pip install cython pyinstaller
 
 # put the src folder inside wine
 RUN mkdir /src/ && ln -s /src /wine/drive_c/src
@@ -114,6 +110,7 @@ WORKDIR /wine/drive_c/src/
 RUN mkdir -p /wine/drive_c/tmp
 
 COPY ../entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY ../cython_bulid.py /cython_bulid.py
+RUN chmod +x /entrypoint.sh /cython_bulid.py
 
 ENTRYPOINT ["/entrypoint.sh"]

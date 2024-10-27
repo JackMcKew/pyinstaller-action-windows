@@ -25,6 +25,10 @@ inputs:
     description: 'Specify a file path for requirements.txt file'
     required: False
     default: "requirements.txt"
+  cython_out:
+    description: 'Specify a folder path for precompiled cython files (relative to the root of the project)'
+    required: False
+    default: ""
 outputs:
   output:
     description: 'The output of PyInstaller'
