@@ -1,7 +1,7 @@
 # Use the Debian testing image as the base
 FROM debian:latest
 # Set the frontend to noninteractive to prevent interactive prompts during installations
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Define arguments for Wine, Python, and PyInstaller versions
 ARG WINE_VERSION=winehq-staging
@@ -44,14 +44,14 @@ RUN wget -nv https://raw.githubusercontent.com/Winetricks/winetricks/master/src/
     && mv winetricks /usr/local/bin
 
 # wine settings
-ENV WINEARCH win64
-ENV WINEDEBUG fixme-all
-ENV WINEPREFIX /wine
+ENV WINEARCH=win64
+ENV WINEDEBUG=fixme-all
+ENV WINEPREFIX=/wine
 
-ENV W_DRIVE_C "/wine/drive_c"
-ENV W_WINDIR_UNIX "$W_DRIVE_C/windows"
-ENV W_SYSTEM64_DLLS "$W_WINDIR_UNIX/system32"
-ENV W_TMP "$W_DRIVE_C/windows/temp/_$0"
+ENV W_DRIVE_C="$WINEPREFIX/drive_c"
+ENV W_WINDIR_UNIX="$W_DRIVE_C/windows"
+ENV W_SYSTEM64_DLLS="$W_WINDIR_UNIX/system32"
+ENV W_TMP="$W_DRIVE_C/windows/temp/_$0"
 
 #install Microsoft Visual C++ Redistributable for Visual Studio 2017 dll files and prepare wine usnog wintricks
 RUN set -x \
@@ -82,7 +82,7 @@ RUN unzip "python-$PYTHON_VERSION-embed-amd64.zip" -d 'python'\
     && mkdir ./DLLs\
     && chmod -R a+rx "$W_DRIVE_C/python"
 
-ENV PYTT "$W_DRIVE_C/python"
+ENV PYTT="$W_DRIVE_C/python"
 
 ADD https://bootstrap.pypa.io/get-pip.py "${PYTT}/get-pip.py"
 RUN echo 'wine '\''C:\python\python.exe'\'' "$@"' > /usr/bin/python \
@@ -102,6 +102,15 @@ RUN echo 'wine '\''C:\python\python.exe'\'' "$@"' > /usr/bin/python \
     && rm -rf /tmp/.wine-*
 
 RUN pip install cython pyinstaller
+
+WORKDIR "$W_DRIVE_C"
+ADD https://sourceforge.net/projects/mingw/files/Installer/mingw-get/mingw-get-0.6.2-beta-20131004-1/mingw-get-0.6.2-mingw32-beta-20131004-1-bin.zip/download "mingw.zip"
+RUN unzip "mingw.zip" -d 'mingw' \
+    && rm mingw.zip \
+    && cd "mingw/bin" \
+    && echo 'mingw-get update && mingw-get install mingw32-base && mingw-get install mingw32-make && mingw-get install mingw32-gcc-g++' | wine cmd
+
+ENV PATH="${PATH}:${W_DRIVE_C}/drive_c/MinGW/bin"
 
 # put the src folder inside wine
 RUN mkdir /src/ && ln -s /src /wine/drive_c/src
