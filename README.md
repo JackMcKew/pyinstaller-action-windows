@@ -1,65 +1,30 @@
-# PyInstaller-Action-Windows
+# Cythinst 64
 
-Github Action for building executables with PyInstaller
+A GitHub Action for building executables with PyInstaller with ability to compile Cython modules.
 
-To build your application, you need to specify where your source code is via the `path` argument, this defaults to `src`.
+## Overview
+Cythinst 64 helps you automate the process of building executables from Python applications using PyInstaller. To build your application, specify the location of your source code using the `path` argument (default: `src`). Your source code directory should include a `.spec` file that PyInstaller generates. If you don't have a `.spec` file, run PyInstaller locally to generate one. You can also specify a custom `.spec` file using `spec: <YOUR_SPEC_FILE_NAME>` if needed.
 
-The source code directory should have your `.spec` file that PyInstaller generates. If you don't have one, you'll need to run PyInstaller once locally to generate it.
-Also if you have another program `.spec` file you can set specific pyinstaller `.spec` file by `spec: <YOUR_SPEC_FILE_NAME>`
+If your source folder contains a `requirements.txt` file, any specified packages will be installed into the environment before running PyInstaller. Alternatively, you can specify a different file via the `requirements` argument.
 
-If the `src` folder has a `requirements.txt` file, the packages will be installed into the environment before PyInstaller runs. This can also be specified via the `requirements` argument.
-
-If you wish to specify a package mirror, this is possibly via the `pypi_url` and/or the `pypi_index_url`, these defaults are:
+To use a custom package mirror, you can set the `pypi_url` and/or `pypi_index_url` arguments. The default values are:
 
 - `pypi_url` = `https://pypi.python.org/`
 - `pypi_index_url` = `https://pypi.python.org/simple`
 
-> If you are using the default Python `gitignore` file, ensure to remove `.spec`.
+> **Note:** If you are using the default Python `.gitignore` file, remember to remove `.spec` from it.
 
-> This action uses [Wine](https://www.winehq.org) to emulate windows inside Docker for packaging POSIX executables.
+> This action uses [Wine](https://www.winehq.org) to emulate Windows inside Docker, which is needed to package Windows-compatible executables and to compile Cython modules.
 
-## CURRENT ISSUE: `ModuleNotFoundError pkg_resources.extern`
-The pkg_resources hook for setuptools>=v70.0.0 is currently missing in pyinstaller 5.13, which is used in this Github Action.
+## Example Usage
+Add the following code to your `.github/workflows/main.yaml` to create a GitHub Actions workflow that:
 
-To address this, a future version of this project will incorporate pyinstaller>=6.7 to resolve the issue. 
-However, in the interim, it is necessary to manually include a hiddenimport to the `.spec` file.
-
-Include `hiddenimports=['pkg_resources.extern'],` in your `.spec` file, something like this:
-```
-a = Analysis(
-
-    hiddenimports=['pkg_resources.extern'],
-)
-```
-
-For further assistance, please refer to the following issues:
-- JackMcKew/pyinstaller-action-windows#51
-- pyinstaller/pyinstaller#8554
-
-
-## Example usage
-
-There's an example repository where you can see this action in action: <https://github.com/JackMcKew/pyinstaller-action-windows-example>.
-
-Include this in your `.github/workflows/main.yaml`:
+1. Packages an application with PyInstaller.
+2. Uploads the packaged executable as an artifact.
 
 ```yaml
-- name: PyInstaller Windows
-  uses: JackMcKew/pyinstaller-action-windows@main
-  with:
-    path: src
-```
-
-## Full Example
-
-Here is an entire workflow for:
-
-- Packaging an application with PyInstaller
-- Uploading the packaged executable as an artifact
-
-``` yaml
-
-name: Package Application with Pyinstaller
+yaml
+name: Package Application with PyInstaller
 
 on:
   push:
@@ -69,27 +34,30 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Package Application
-      uses: JackMcKew/pyinstaller-action-windows@main
-      with:
-        path: src
-
-    - uses: actions/upload-artifact@v4
-      with:
-        name: name-of-artifact
-        path: src/dist/windows
+      - uses: actions/checkout@v4
+      - name: Package Application
+        uses: PlohnenSoftware/Cythinst64
+        with:
+          path: src
+      - name: Upload Packaged Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: packaged-artifact
+          path: src/dist/windows
 ```
 
 ## FAQ
 
-If you get this error: `OSError: [WinError 123] Invalid name: '/tmp\\*'`, ensure your path is correctly configured, the default is `src`.
+### Why am I seeing `OSError: [WinError 123] Invalid name: '/tmp\*'`?
+Ensure that your `path` argument is correctly set. The default value is `src`.
 
-## Sources
+### Is this action stable?
+This is experimental software. Use it at your own risk; there is no warranty.
 
-A big thank you to all the contributors over at <https://github.com/cdrx/docker-pyinstaller>, this action is just a modified version of their docker container, thank you!
+## External resources used to build this action
+- [docker-pyinstaller](https://github.com/cdrx/docker-pyinstaller)
+- [pyinstaller-action-windows](https://github.com/JackMcKew/pyinstaller-action-windows)
+- [cython_build script adapted from here](https://github.com/PlohnenSoftware/familiada_ZSP)
+

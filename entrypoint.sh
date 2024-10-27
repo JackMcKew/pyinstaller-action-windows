@@ -12,6 +12,8 @@ PYPI_URL=${2:-"https://pypi.python.org/"}  # Default PyPI URL
 PYPI_INDEX_URL=${3:-"https://pypi.python.org/simple"}  # Default PyPI Index URL
 SPEC_FILE=${4:-*.spec}  # Default to an empty string for .spec file path
 REQUIREMENTS=${5:-"requirements.txt"}  # Default requirements file
+CYTHON_OUT=$6 # Default prec folder
+
 
 
 # In case the user specified a custom URL for PYPI, then use
@@ -26,16 +28,22 @@ if [[ "$PYPI_URL" != "https://pypi.python.org/" ]] || \
     echo "index = $PYPI_URL" >> /wine/drive_c/users/root/pip/pip.ini
     echo "index-url = $PYPI_INDEX_URL" >> /wine/drive_c/users/root/pip/pip.ini
     echo "trusted-host = $(echo $PYPI_URL | perl -pe 's|^.*?://(.*?)(:.*?)?/.*$|$1|')" >> /wine/drive_c/users/root/pip/pip.ini
-
     echo "Using custom pip.ini: "
     cat /wine/drive_c/users/root/pip/pip.ini
 fi
 
 cd $WORKDIR
+echo "Working directory: $WORKDIR"
 
 if [ -f $REQUIREMENTS ]; then
     pip install -r $REQUIREMENTS
 fi 
+
+if [ -f $CYTHON_OUT ]; then
+    cd ..
+    python /cython_bulid.py
+    cd $WORKDIR
+fi
 
 pyinstaller --clean -y --dist ./dist/windows --workpath /tmp $SPEC_FILE
 chown -R --reference=. ./dist/windows
