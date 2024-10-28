@@ -46,6 +46,7 @@ if [ -n "$CYTHON_OUT" ]; then
     echo "gcc --version"| wine cmd
     python /cython_build.py
     cd $WORKDIR
+    mkdir -p "$CYTHON_OUT"
     mv ../*.pyd "$CYTHON_OUT/"
 fi
 
