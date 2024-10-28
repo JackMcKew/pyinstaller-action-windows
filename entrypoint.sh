@@ -42,7 +42,7 @@ fi
 if [ -f $CYTHON_OUT ]; then
     cd ..
     mkdir ./build
-    echo 'set PATH=%PATH%;C:\MinGW\bin && mingw32 && /wine/drive_c/python/python.exe /cython_bulid.py'|wine cmd
+    python /cython_build.py
     cd $WORKDIR
 fi
 

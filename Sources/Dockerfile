@@ -126,16 +126,14 @@ RUN python -c "import sys; print(sys.path)"
 # Set working directory to Wine drive C
 WORKDIR "$W_DRIVE_C"
 
-# Download MinGW installer to set up a cross-compiling environment
-ADD https://sourceforge.net/projects/mingw/files/Installer/mingw-get/mingw-get-0.6.2-beta-20131004-1/mingw-get-0.6.2-mingw32-beta-20131004-1-bin.zip/download "mingw.zip"
-RUN unzip "mingw.zip" -d 'mingw' \
-    && rm mingw.zip \
-    && cd "mingw/bin" \
-    && echo 'mingw-get update && mingw-get install mingw32-base && mingw-get install mingw32-make && mingw-get install mingw32-gcc-g++' | wine cmd
-
-# Add MinGW binaries to PATH
-ENV PATH="${PATH}:${W_DRIVE_C}/drive_c/MinGW/bin"
-
+# Download GCC to set up a cross-compiling environment
+# MSVCRT 64bit runtime https://winlibs.com/#download-release
+ADD https://github.com/brechtsanders/winlibs_mingw/releases/download/14.2.0posix-19.1.1-12.0.0-msvcrt-r2/winlibs-x86_64-posix-seh-gcc-14.2.0-llvm-19.1.1-mingw-w64msvcrt-12.0.0-r2.zip "winlibs.zip"
+RUN unzip "winlibs.zip" -d './' \
+    && ls\
+    && rm winlibs.zip\
+    && wine reg add "HKEY_CURRENT_USER\Environment" /v PATH /t REG_SZ /d "C:\\mingw64\bin;%PATH%" /f \
+    && echo "gcc --version"| wine cmd
 # Create /src directory and link it to Wine's C drive
 RUN mkdir /src/ && ln -s /src /wine/drive_c/src
 
@@ -150,10 +148,10 @@ RUN mkdir -p /wine/drive_c/tmp
 
 # Copy entrypoint and Cython build scripts into the container
 COPY ../entrypoint.sh /entrypoint.sh
-COPY ../cython_bulid.py /cython_bulid.py
+COPY ../cython_build.py /cython_build.py
 
 # Make the entrypoint and build scripts executable
-RUN chmod +x /entrypoint.sh /cython_bulid.py
+RUN chmod +x /entrypoint.sh /cython_build.py
 
 # Set the container's entrypoint to the entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]
