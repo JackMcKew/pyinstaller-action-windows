@@ -39,13 +39,14 @@ if [ -f $REQUIREMENTS ]; then
     pip install -r $REQUIREMENTS
 fi 
 
-if [ -f $CYTHON_OUT ]; then
+if [ -n "$CYTHON_OUT" ]; then
     cd ..
     mkdir ./build
     wine reg add "HKEY_CURRENT_USER\Environment" /v PATH /t REG_SZ /d "C:\\mingw64\bin;%PATH%" /f
     echo "gcc --version"| wine cmd
     python /cython_build.py
     cd $WORKDIR
+    mv ../*.pyd "$CYTHON_OUT/"
 fi
 
 pyinstaller --clean -y --dist ./dist/windows --workpath /tmp $SPEC_FILE

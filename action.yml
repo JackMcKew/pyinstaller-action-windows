@@ -26,7 +26,7 @@ inputs:
     required: False
     default: "requirements.txt"
   cython_out:
-    description: 'Specify a folder path for precompiled cython files (relative to the root of the project)'
+    description: 'Specify a folder path for precompiled cython files (relative to the SRC folder)'
     required: False
     default: ""
 outputs:
@@ -42,3 +42,4 @@ runs:
     - ${{ inputs.pypi_index_url }}
     - ${{ inputs.spec }}
     - ${{ inputs.requirements }}
+    - ${{ inputs.cython_out }}

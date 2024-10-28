@@ -4,10 +4,7 @@
 # FOR EXAMPLE IN CASE OF OLDER PYTHON VERSIONS
 
 # Import necessary modules
-from sys import argv, exit
-from os import path, walk, getenv
-from shutil import move
-from re import search
+from sys import argv
 from setuptools import setup
 from Cython.Build import cythonize
 
@@ -15,41 +12,9 @@ from Cython.Build import cythonize
 argv.append("build_ext")
 argv.append("--inplace")
 argv.append("--compiler=mingw32")
-print("arguments: ", argv)
 
-try:
-    ext_modules=cythonize(".\\src\\*.pyx", build_dir=".\\build")
-    print("Cythonizing files... ", ext_modules)
-    setup(ext_modules=ext_modules)
-    print("Setup build successful")
-except Exception as e:
-    print(f"An error occurred during the Cython build: {e}")
-    raise
+ext_modules=cythonize(".\\src\\*.pyx", build_dir=".\\build")
+print("Cythonizing files... ", ext_modules)
 
-
-def find_name(name_regex: str) -> str | None:
-    for root, _, files in walk(
-        "./"
-    ):  # Traverse all directories and files starting from the current directory
-        for file in files:  # For each file in the directory
-            if search(
-                name_regex, file
-            ):  # Check if the file name matches the given regex
-                return path.join(
-                    root, file
-                )  # Return the full file path if a match is found
-    return None  # Return None if no file matches the regex pattern
-
-
-# Find the compiled Cython file matching the pattern "helpers.c*"
-file_name = find_name(r".*\.pyd")
-if file_name is None:
-    # If no file matching "helpers.c*" is found, print a message and exit the script
-    print("No file found with extension .pyd")
-    exit(1)
-
-print(f"Found file: {file_name}")
-
-# Move the matched file to the "src/prec" directory
-move(path.join(file_name), path.join(getenv("CYTHON_OUT"), path.basename(file_name)))
-print("File moved successfully")
+setup(ext_modules=ext_modules)
+print("Setup build successful")
