@@ -1,5 +1,6 @@
 # Use the Debian testing image as the base
 FROM debian:latest
+
 # Set the frontend to noninteractive to prevent interactive prompts during installations
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -7,11 +8,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG WINE_VERSION=winehq-staging
 ARG PYTHON_VERSION=3.10.1
 
-# we need wine for this all to work, so we'll use the PPA
+# Add i386 architecture support and update package list
 RUN set -x \
     && dpkg --add-architecture i386 \
     && apt update -qy && apt clean
 
+# Install essential tools and dependencies without unnecessary recommended packages
 RUN apt install --no-install-recommends -qfy\
     apt-transport-https \
     git \
@@ -23,10 +25,12 @@ RUN apt install --no-install-recommends -qfy\
     wget \
     && apt clean
 
+# Download and add the WineHQ repository key, then add the repository
 RUN wget -nv https://dl.winehq.org/wine-builds/winehq.key \
     && apt-key add winehq.key \
-    && add-apt-repository 'https://dl.winehq.org/wine-builds/debian/' 
+    && add-apt-repository 'https://dl.winehq.org/wine-builds/debian/'
 
+# Update package list and install Wine and its dependencies without unnecessary packages
 RUN apt update -qy\
     && apt install --no-install-recommends -qfy\
     cabextract \
@@ -39,21 +43,23 @@ RUN apt update -qy\
     wine64 \
     && apt clean
 
+# Download and set up Winetricks for further configuration of Wine
 RUN wget -nv https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \
     && chmod +x winetricks \
     && mv winetricks /usr/local/bin
 
-# wine settings
+# Set up Wine environment variables for 64-bit architecture and Wine configuration
 ENV WINEARCH=win64
 ENV WINEDEBUG=fixme-all
 ENV WINEPREFIX=/wine
 
+# Set up various environment variables related to Wine drive C, windows directory, and temporary directories
 ENV W_DRIVE_C="$WINEPREFIX/drive_c"
 ENV W_WINDIR_UNIX="$W_DRIVE_C/windows"
 ENV W_SYSTEM64_DLLS="$W_WINDIR_UNIX/system32"
-ENV W_TMP="$W_DRIVE_C/windows/temp/_$0"
+ENV W_TMP="$W_DRIVE_C/windows/temp/_"
 
-#install Microsoft Visual C++ Redistributable for Visual Studio 2017 dll files and prepare wine usnog wintricks
+# Install Microsoft Visual C++ Redistributable for Visual Studio 2017 dll files and configure Wine using Winetricks
 RUN set -x \
     && winetricks win7\
     && rm -f "$W_TMP"/* \
@@ -65,26 +71,36 @@ RUN set -x \
     && rename 's/_/\-/g' *.dll \
     && cp "$W_TMP"/*.dll "$W_SYSTEM64_DLLS"/
 
-
+# Set working directory to Wine drive C
 WORKDIR "$W_DRIVE_C"
-ADD https://www.python.org/ftp/python/$PYTHON_VERSION/python-$PYTHON_VERSION-embed-amd64.zip .
 
-RUN unzip "python-$PYTHON_VERSION-embed-amd64.zip" -d 'python'\
-    && rm "python-$PYTHON_VERSION-embed-amd64.zip" \
-    && cd "python" \
-    && archive=$(find . -name "python*.zip" -print -quit)\
-    && folder_name="${archive##*/}"\
-    && folder_name="${folder_name%.zip}"\
-    && unzip "$archive" -d "$folder_name"\
-    && rm "$archive"\
-    && echo ".\\$folder_name\n.\\Scripts\n.\n.\\lib\\site-packages\n\nimport site\n" > "./$folder_name._pth"\
-    && echo "import sys\n" > "./sitecustomize.py"\
-    && mkdir ./DLLs\
+# Define the Python FTP repository for MSI installation files
+ARG PY_FTP_REPO=https://www.python.org/ftp/python/$PYTHON_VERSION/amd64
+
+# Add all Python MSI files into the container
+ADD ${PY_FTP_REPO}/core.msi /tmppy/core.msi
+ADD ${PY_FTP_REPO}/dev.msi /tmppy/dev.msi
+ADD ${PY_FTP_REPO}/exe.msi /tmppy/exe.msi
+ADD ${PY_FTP_REPO}/lib.msi /tmppy/lib.msi
+ADD ${PY_FTP_REPO}/path.msi /tmppy/path.msi
+ADD ${PY_FTP_REPO}/tcltk.msi /tmppy/tcltk.msi
+ADD ${PY_FTP_REPO}/tools.msi /tmppy/tools.msi
+
+# Install each Python MSI file using Wine
+RUN ls /tmppy \
+    && for msifile in `echo core dev exe lib path pip tcltk tools`; do \
+    wine msiexec /i "/tmppy/${msifile}.msi" /qb TARGETDIR=C:/python; \  
+    done\
+    && rm -rf "/tmppy/"\
     && chmod -R a+rx "$W_DRIVE_C/python"
 
+# Set Python environment variable
 ENV PYTT="$W_DRIVE_C/python"
 
+# Add get-pip script for installing pip
 ADD https://bootstrap.pypa.io/get-pip.py "${PYTT}/get-pip.py"
+
+# Create wrapper scripts for Python, pip, and other tools to run via Wine
 RUN echo 'wine '\''C:\python\python.exe'\'' "$@"' > /usr/bin/python \
     && echo 'wine '\''C:\python\Scripts\easy_install.exe'\'' "$@"' > /usr/bin/easy_install \
     && echo 'wine '\''C:\python\Scripts\pip.exe'\'' "$@"' > /usr/bin/pip \
@@ -101,25 +117,40 @@ RUN echo 'wine '\''C:\python\python.exe'\'' "$@"' > /usr/bin/python \
     && (pip install -U pip || true) \
     && rm -rf /tmp/.wine-*
 
+# Install essential Python libraries such as Cython and PyInstaller
 RUN pip install cython pyinstaller
 
+# Set working directory to Wine drive C
 WORKDIR "$W_DRIVE_C"
+
+# Download MinGW installer to set up a cross-compiling environment
 ADD https://sourceforge.net/projects/mingw/files/Installer/mingw-get/mingw-get-0.6.2-beta-20131004-1/mingw-get-0.6.2-mingw32-beta-20131004-1-bin.zip/download "mingw.zip"
 RUN unzip "mingw.zip" -d 'mingw' \
     && rm mingw.zip \
     && cd "mingw/bin" \
     && echo 'mingw-get update && mingw-get install mingw32-base && mingw-get install mingw32-make && mingw-get install mingw32-gcc-g++' | wine cmd
 
+# Add MinGW binaries to PATH
 ENV PATH="${PATH}:${W_DRIVE_C}/drive_c/MinGW/bin"
 
-# put the src folder inside wine
+# Create /src directory and link it to Wine's C drive
 RUN mkdir /src/ && ln -s /src /wine/drive_c/src
+
+# Create a volume for the source directory
 VOLUME /src/
+
+# Set the working directory inside the Wine environment to /src
 WORKDIR /wine/drive_c/src/
+
+# Create temporary directory within the Wine environment
 RUN mkdir -p /wine/drive_c/tmp
 
+# Copy entrypoint and Cython build scripts into the container
 COPY ../entrypoint.sh /entrypoint.sh
 COPY ../cython_bulid.py /cython_bulid.py
+
+# Make the entrypoint and build scripts executable
 RUN chmod +x /entrypoint.sh /cython_bulid.py
 
+# Set the container's entrypoint to the entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]
