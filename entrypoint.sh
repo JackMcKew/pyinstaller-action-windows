@@ -41,7 +41,7 @@ fi
 
 if [ -f $CYTHON_OUT ]; then
     cd ..
-    python /cython_bulid.py
+    echo '/wine/drive_c/python/python.exe /cython_bulid.py'|wine cmd
     cd $WORKDIR
 fi
 
