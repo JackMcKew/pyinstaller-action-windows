@@ -120,6 +120,9 @@ RUN echo 'wine '\''C:\python\python.exe'\'' "$@"' > /usr/bin/python \
 # Install essential Python libraries such as Cython and PyInstaller
 RUN pip install cython pyinstaller
 
+# debug command
+RUN python -c "import sys; print(sys.path)"
+
 # Set working directory to Wine drive C
 WORKDIR "$W_DRIVE_C"
 

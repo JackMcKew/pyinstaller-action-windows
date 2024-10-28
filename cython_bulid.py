@@ -14,16 +14,23 @@ from Cython.Build import cythonize
 # Append "build_ext" and "--inplace" to sys.argv to ensure the extension is built in place
 argv.append("build_ext")
 argv.append("--inplace")
-argv.append('--compiler=mingw32')
+argv.append("--compiler=mingw32")
 
-setup(ext_modules=cythonize("src/*.pyx", build_dir="build"))
+setup(ext_modules=cythonize("src/*.pyx", build_dir="./build"))
+print("Cython build successful")
 
 
 def find_name(name_regex: str) -> str | None:
-    for root, _, files in walk("."):  # Traverse all directories and files starting from the current directory
+    for root, _, files in walk(
+        "."
+    ):  # Traverse all directories and files starting from the current directory
         for file in files:  # For each file in the directory
-            if search(name_regex, file):  # Check if the file name matches the given regex
-                return path.join(root, file)  # Return the full file path if a match is found
+            if search(
+                name_regex, file
+            ):  # Check if the file name matches the given regex
+                return path.join(
+                    root, file
+                )  # Return the full file path if a match is found
     return None  # Return None if no file matches the regex pattern
 
 
@@ -31,8 +38,11 @@ def find_name(name_regex: str) -> str | None:
 file_name = find_name(r".*\.pyd")
 if file_name is None:
     # If no file matching "helpers.c*" is found, print a message and exit the script
-    print("No file found with name helpers.c*")
+    print("No file found with extension .pyd")
     exit(1)
+
+print(f"Found file: {file_name}")
 
 # Move the matched file to the "src/prec" directory
 move(path.join(file_name), path.join(getenv("CYTHON_OUT"), path.basename(file_name)))
+print("File moved successfully")
