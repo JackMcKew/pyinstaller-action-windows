@@ -42,6 +42,7 @@ fi
 if [ -f $CYTHON_OUT ]; then
     cd ..
     mkdir ./build
+    echo "gcc --version"| wine cmd
     python /cython_build.py
     cd $WORKDIR
 fi
