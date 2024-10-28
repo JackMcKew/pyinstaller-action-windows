@@ -15,10 +15,13 @@ from Cython.Build import cythonize
 argv.append("build_ext")
 argv.append("--inplace")
 argv.append("--compiler=mingw32")
+print("arguments: ", argv)
 
 try:
-    setup(ext_modules=cythonize(".\\src\\*.pyx", build_dir=".\\build"))
-    print("Cython build successful")
+    ext_modules=cythonize(".\\src\\*.pyx", build_dir=".\\build")
+    print("Cythonizing files... ", ext_modules)
+    setup(ext_modules=ext_modules)
+    print("Setup build successful")
 except Exception as e:
     print(f"An error occurred during the Cython build: {e}")
     raise
