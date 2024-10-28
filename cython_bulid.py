@@ -17,7 +17,7 @@ argv.append("--inplace")
 argv.append("--compiler=mingw32")
 
 try:
-    setup(ext_modules=cythonize("src/*.pyx", build_dir="./build"))
+    setup(ext_modules=cythonize("./src/*.pyx", build_dir="./build"))
     print("Cython build successful")
 except Exception as e:
     print(f"An error occurred during the Cython build: {e}")
@@ -26,7 +26,7 @@ except Exception as e:
 
 def find_name(name_regex: str) -> str | None:
     for root, _, files in walk(
-        "."
+        "./"
     ):  # Traverse all directories and files starting from the current directory
         for file in files:  # For each file in the directory
             if search(
