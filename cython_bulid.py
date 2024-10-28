@@ -17,7 +17,7 @@ argv.append("--inplace")
 argv.append("--compiler=mingw32")
 
 try:
-    setup(ext_modules=cythonize("./src/*.pyx", build_dir="./build"))
+    setup(ext_modules=cythonize(".\\src\\*.pyx", build_dir=".\\build"))
     print("Cython build successful")
 except Exception as e:
     print(f"An error occurred during the Cython build: {e}")
