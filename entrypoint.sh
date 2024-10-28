@@ -40,11 +40,9 @@ if [ -f $REQUIREMENTS ]; then
 fi 
 
 if [ -f $CYTHON_OUT ]; then
-    WINEARCH=win32
     cd ..
     python /cython_bulid.py
     cd $WORKDIR
-    WINEARCH=win64
 fi
 
 pyinstaller --clean -y --dist ./dist/windows --workpath /tmp $SPEC_FILE
