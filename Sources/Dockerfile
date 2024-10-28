@@ -1,16 +1,13 @@
 # Use the Debian testing image as the base
-FROM debian:latest
+FROM debian:testing
 
 # Set the frontend to noninteractive to prevent interactive prompts during installations
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Define arguments for Wine, Python, and PyInstaller versions
-ARG WINE_VERSION=winehq-staging
-ARG PYTHON_VERSION=3.10.1
-
 # Add i386 architecture support and update package list
 RUN set -x \
     && dpkg --add-architecture i386 \
+    && echo 'deb http://deb.debian.org/debian bookworm main' | tee /etc/apt/sources.list.d/bookworm.list\
     && apt update -qy && apt clean
 
 # Install essential tools and dependencies without unnecessary recommended packages
@@ -20,7 +17,6 @@ RUN apt install --no-install-recommends -qfy\
     gpg-agent \
     rename \
     software-properties-common \
-    tree\
     unzip\
     wget \
     && apt clean
@@ -71,10 +67,25 @@ RUN set -x \
     && rename 's/_/\-/g' *.dll \
     && cp "$W_TMP"/*.dll "$W_SYSTEM64_DLLS"/
 
+
+# Set working directory to Wine drive C
+WORKDIR "$W_DRIVE_C"
+
+# Download GCC to set up a cross-compiling environment
+# MSVCRT 64bit runtime https://winlibs.com/#download-release
+ADD https://github.com/brechtsanders/winlibs_mingw/releases/download/14.2.0posix-19.1.1-12.0.0-msvcrt-r2/winlibs-x86_64-posix-seh-gcc-14.2.0-llvm-19.1.1-mingw-w64msvcrt-12.0.0-r2.zip "winlibs.zip"
+RUN unzip "winlibs.zip" -d './' \
+    && ls\
+    && rm winlibs.zip\
+    && wine reg add "HKEY_CURRENT_USER\Environment" /v PATH /t REG_SZ /d "C:\\mingw64\bin;%PATH%" /f \
+    && echo "gcc --version"| wine cmd
+
+
 # Set working directory to Wine drive C
 WORKDIR "$W_DRIVE_C"
 
 # Define the Python FTP repository for MSI installation files
+ARG PYTHON_VERSION=3.10.2 
 ARG PY_FTP_REPO=https://www.python.org/ftp/python/$PYTHON_VERSION/amd64
 
 # Add all Python MSI files into the container
@@ -89,13 +100,19 @@ ADD ${PY_FTP_REPO}/tools.msi /tmppy/tools.msi
 # Install each Python MSI file using Wine
 RUN ls /tmppy \
     && for msifile in `echo core dev exe lib path pip tcltk tools`; do \
-    wine msiexec /i "/tmppy/${msifile}.msi" /qb TARGETDIR=C:/python; \  
+    wine msiexec /i "/tmppy/${msifile}.msi" /qb TARGETDIR=C:/python && echo "DONE:${msifile}"; \  
     done\
     && rm -rf "/tmppy/"\
     && chmod -R a+rx "$W_DRIVE_C/python"
 
 # Set Python environment variable
 ENV PYTT="$W_DRIVE_C/python"
+
+# Update PyConfig.h file
+COPY ../py_conf_update.sh /py_conf_update.sh
+RUN chmod a+rx /py_conf_update.sh\
+    && /py_conf_update.sh\
+    && rm /py_conf_update.sh
 
 # Add get-pip script for installing pip
 ADD https://bootstrap.pypa.io/get-pip.py "${PYTT}/get-pip.py"
@@ -108,6 +125,7 @@ RUN echo 'wine '\''C:\python\python.exe'\'' "$@"' > /usr/bin/python \
     && echo 'wine '\''C:\python\Scripts\pyupdater.exe'\'' "$@"' > /usr/bin/pyupdater \
     && echo 'wine '\''C:\python\Scripts\cython.exe'\'' "$@"' > /usr/bin/cython \
     && echo 'wine '\''C:\python\Scripts\cythonize.exe'\'' "$@"' > /usr/bin/cythonize \
+    && wine --version \  
     && echo 'assoc .py=PythonScript' | wine cmd \
     && echo 'ftype PythonScript=c:\python\python.exe "%1" %*' | wine cmd \
     && while pgrep wineserver >/dev/null; do echo "Waiting for wineserver"; sleep 1; done \
@@ -122,24 +140,6 @@ RUN pip install cython pyinstaller
 
 # debug command
 RUN python -c "import sys; print(sys.path)"
-
-# Set working directory to Wine drive C
-WORKDIR "$W_DRIVE_C"
-
-# Download GCC to set up a cross-compiling environment
-# MSVCRT 64bit runtime https://winlibs.com/#download-release
-ADD https://github.com/brechtsanders/winlibs_mingw/releases/download/14.2.0posix-19.1.1-12.0.0-msvcrt-r2/winlibs-x86_64-posix-seh-gcc-14.2.0-llvm-19.1.1-mingw-w64msvcrt-12.0.0-r2.zip "winlibs.zip"
-RUN unzip "winlibs.zip" -d './' \
-    && ls\
-    && rm winlibs.zip\
-    && wine reg add "HKEY_CURRENT_USER\Environment" /v PATH /t REG_SZ /d "C:\\mingw64\bin;%PATH%" /f \
-    && echo "gcc --version"| wine cmd
-
-# Update PyConfig.h file
-COPY ../py_conf_update.sh /py_conf_update.sh
-RUN chmod a+rx /py_conf_update.sh\
-    && /py_conf_update.sh\
-    && rm /py_conf_update.sh
 
 # Create /src directory and link it to Wine's C drive
 RUN mkdir /src/ && ln -s /src /wine/drive_c/src
