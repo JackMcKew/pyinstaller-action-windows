@@ -1,4 +1,5 @@
-# Cythinst 64
+
+# **Cythinst 64**
 
 A GitHub Action for building executables with PyInstaller with ability to compile Cython modules.
 
@@ -7,6 +8,7 @@ Cythinst 64 helps you automate the process of building executables from Python a
 
 If your source folder contains a `requirements.txt` file, any specified packages will be installed into the environment before running PyInstaller. Alternatively, you can specify a different file via the `requirements` argument.
 
+If you decide to pass `cython_out:` a parameter to action too, it will compile all Cython source `.pyx` files and put compiled modules into the catalog given by this parameter (relative to `src`)
 To use a custom package mirror, you can set the `pypi_url` and/or `pypi_index_url` arguments. The default values are:
 
 - `pypi_url` = `https://pypi.python.org/`
@@ -23,7 +25,6 @@ Add the following code to your `.github/workflows/main.yaml` to create a GitHub 
 2. Uploads the packaged executable as an artifact.
 
 ```yaml
-yaml
 name: Package Application with PyInstaller
 
 on:
@@ -47,7 +48,10 @@ jobs:
           name: packaged-artifact
           path: src/dist/windows
 ```
-
+## TO-DO
+* Fix stack overflow error while unpacking `.msi` files for python versions higher than 3.10.2
+* Create test example, so all container's functionalities can be locally tested
+* Setup docker build and push workflow
 ## FAQ
 
 ### Why am I seeing `OSError: [WinError 123] Invalid name: '/tmp\*'`?
@@ -81,5 +85,5 @@ These steps will ensure that your updated image is properly built and pushed to 
 ## External resources used to build this action
 - [docker-pyinstaller](https://github.com/cdrx/docker-pyinstaller)
 - [pyinstaller-action-windows](https://github.com/JackMcKew/pyinstaller-action-windows)
-- [cython_build script adapted from here](https://github.com/PlohnenSoftware/familiada_ZSP)
+- cython_build script adapted from [here](https://github.com/PlohnenSoftware/familiada_ZSP/blob/c3d74b5658fd102379fcc90ffc4657419b5805fe/set.py)
 
