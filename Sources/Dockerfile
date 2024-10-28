@@ -134,6 +134,13 @@ RUN unzip "winlibs.zip" -d './' \
     && rm winlibs.zip\
     && wine reg add "HKEY_CURRENT_USER\Environment" /v PATH /t REG_SZ /d "C:\\mingw64\bin;%PATH%" /f \
     && echo "gcc --version"| wine cmd
+
+# Update PyConfig.h file
+COPY ../py_conf_update.sh /py_conf_update.sh
+RUN chmod a+rx /py_conf_update.sh\
+    && /py_conf_update.sh\
+    && rm /py_conf_update.sh
+
 # Create /src directory and link it to Wine's C drive
 RUN mkdir /src/ && ln -s /src /wine/drive_c/src
 
@@ -151,7 +158,7 @@ COPY ../entrypoint.sh /entrypoint.sh
 COPY ../cython_build.py /cython_build.py
 
 # Make the entrypoint and build scripts executable
-RUN chmod +x /entrypoint.sh /cython_build.py
+RUN chmod a+rx /entrypoint.sh /cython_build.py
 
 # Set the container's entrypoint to the entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]
