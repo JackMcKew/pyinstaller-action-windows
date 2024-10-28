@@ -14,7 +14,7 @@ from Cython.Build import cythonize
 # Append "build_ext" and "--inplace" to sys.argv to ensure the extension is built in place
 argv.append("build_ext")
 argv.append("--inplace")
-argv.append("--compiler=gcc")
+argv.append("--compiler=mingw32")
 print("arguments: ", argv)
 
 try:
