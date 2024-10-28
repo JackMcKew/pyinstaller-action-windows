@@ -56,6 +56,28 @@ Ensure that your `path` argument is correctly set. The default value is `src`.
 ### Is this action stable?
 This is experimental software. Use it at your own risk; there is no warranty.
 
+## Docker Files
+
+To push new images up to Docker Hub for your container (`zamkorus/cythinst64:latest`):
+
+1. **Login to Docker Hub**:
+   ```bash
+   docker login
+   ```
+
+2. **Build the Docker Image**:
+   ```bash
+   docker build -f Dockerfile -t zamkorus/cythinst64:latest .
+   ```
+
+3. **Push the Docker Image to Docker Hub**:
+   ```bash
+   docker push zamkorus/cythinst64:latest
+   ```
+
+These steps will ensure that your updated image is properly built and pushed to Docker Hub.
+
+
 ## External resources used to build this action
 - [docker-pyinstaller](https://github.com/cdrx/docker-pyinstaller)
 - [pyinstaller-action-windows](https://github.com/JackMcKew/pyinstaller-action-windows)
