@@ -14,7 +14,7 @@ from Cython.Build import cythonize
 # Append "build_ext" and "--inplace" to sys.argv to ensure the extension is built in place
 argv.append("build_ext")
 argv.append("--inplace")
-argv.append("--compiler=mingw32")
+argv.append("--compiler=mingw64")
 
 try:
     setup(ext_modules=cythonize("./src/*.pyx", build_dir="./build"))
