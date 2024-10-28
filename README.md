@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Package Application
-        uses: PlohnenSoftware/Cythinst64
+        uses: PlohnenSoftware/Cythinst64@main
         with:
           path: src
       - name: Upload Packaged Executable
