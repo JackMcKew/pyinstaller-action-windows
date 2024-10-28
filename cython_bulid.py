@@ -16,8 +16,12 @@ argv.append("build_ext")
 argv.append("--inplace")
 argv.append("--compiler=mingw32")
 
-setup(ext_modules=cythonize("src/*.pyx", build_dir="./build"))
-print("Cython build successful")
+try:
+    setup(ext_modules=cythonize("src/*.pyx", build_dir="./build"))
+    print("Cython build successful")
+except Exception as e:
+    print(f"An error occurred during the Cython build: {e}")
+    raise
 
 
 def find_name(name_regex: str) -> str | None:
