@@ -42,6 +42,7 @@ fi
 if [ -f $CYTHON_OUT ]; then
     cd ..
     mkdir ./build
+    gcc --version
     python /cython_bulid.py
     cd $WORKDIR
 fi
